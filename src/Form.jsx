@@ -1,51 +1,36 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import useBreedList from "./useBreedList";
 
 const ANIMALS = ["bird", "cat", "dog", "rabbit", "reptile"];
 
-export default function Form({ setPets }) {
-  const [location, setLocation] = useState("");
+export default function Form({ setRequestParams }) {
   const [animal, setAnimal] = useState("");
-  const [breed, setBreed] = useState("");
-
-  useEffect(() => {
-    requestPets();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  async function requestPets() {
-    const res = await fetch(
-      `http://pets-v2.dev-apis.com/pets?animal=${animal}&location=${location}&breed=${breed}`
-    );
-    const json = await res.json();
-    setPets(json.pets);
-  }
   const [breeds] = useBreedList(animal);
+
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        requestPets();
+        const formData = new FormData(e.target);
+        const obj = {
+          animal: formData.get("animal") ?? "",
+          location: formData.get("location") ?? "",
+          breed: formData.get("breed") ?? "",
+        };
+        setRequestParams(obj);
       }}
     >
       <label>
         Location
-        <input
-          onChange={(e) => setLocation(e.target.value)}
-          id="location"
-          value={location}
-          placeholder="Location"
-        />
+        <input id="location" placeholder="Location" name="location" />
       </label>
       <label>
         Animal
         <select
           id="animal"
           value={animal}
-          disabled={!ANIMALS.length}
-          onChange={(e) => {
-            setAnimal(e.target.value);
-            setBreed("");
-          }}
+          name="animal"
+          onChange={(e) => setAnimal(e.target.value)}
         >
           <option />
           {ANIMALS.map((animal) => (
@@ -55,12 +40,7 @@ export default function Form({ setPets }) {
       </label>
       <label>
         Breed
-        <select
-          id="breed"
-          value={breed}
-          disabled={!breeds.length}
-          onChange={(e) => setBreed(e.target.value)}
-        >
+        <select id="breed" disabled={!breeds.length} name="breed">
           <option />
           {breeds.map((breed) => (
             <option key={breed}>{breed}</option>
