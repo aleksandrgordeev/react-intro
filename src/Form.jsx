@@ -3,7 +3,7 @@ import useBreedList from "./useBreedList";
 
 const ANIMALS = ["bird", "cat", "dog", "rabbit", "reptile"];
 
-export default function Form({ setRequestParams }) {
+export default function Form({ setRequestParams, adoptedPet }) {
   const [animal, setAnimal] = useState("");
   const [breeds] = useBreedList(animal);
 
@@ -20,6 +20,11 @@ export default function Form({ setRequestParams }) {
         setRequestParams(obj);
       }}
     >
+      {adoptedPet ? (
+        <div className="pet image-container">
+          <img src={adoptedPet.images[0]} alt={adoptedPet.name} />
+        </div>
+      ) : null}
       <label>
         Location
         <input id="location" placeholder="Location" name="location" />
